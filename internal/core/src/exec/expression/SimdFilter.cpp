@@ -24,6 +24,8 @@
 // At first call, detects CPU features and selects the best per-arch impl.
 // ═══════════════════════════════════════════════════════════════════════════
 
+#include <algorithm>
+
 #include "SimdFilter.h"
 #include "SimdFilterImpl.h"
 
@@ -112,21 +114,36 @@ namespace baseline {
 using Arch = xsimd::sse2;
 #elif defined(__aarch64__)
 using Arch = xsimd::neon64;
-#else
-using Arch = xsimd::default_arch;
 #endif
 
 template <typename T>
 void
 filterChunk(
     const T* data, int size, uint8_t* bitmap, const T* vals, int num_vals) {
+#if defined(__riscv)
+    // RISC-V scalar fallback. bitmap is bit-packed.
+    if (size <= 0 || num_vals <= 0) {
+        return;
+    }
+
+    for (int i = 0; i < size; ++i) {
+        if (std::binary_search(vals, vals + num_vals, data[i])) {
+            bitmap[i / 8] |= static_cast<uint8_t>(1U << (i % 8));
+        }
+    }
+#else
     detail::filterChunkImpl<T, Arch>(data, size, bitmap, vals, num_vals);
+#endif
 }
 
 template <typename T>
 int
 laneCount() {
+#if defined(__riscv)
+    return 1;
+#else
     return xsimd::batch<T, Arch>::size;
+#endif
 }
 
 #define INSTANTIATE(T)                                                    \

@@ -135,3 +135,26 @@ docs/plans/
 .ripgreprc
 .zprofile
 .zshrc
+
+# RISC-V port local build artifacts
+cmake_build.before-*/
+internal/core/output.before-*/
+folly/
+folly-config.cmake
+libfolly.pc
+libfolly.pc.gen
+mongocxx_install_manifest.txt
+
+# Local backup files
+*.bak
+*.bak.*
+*.bak-*
+*.before-*
+Makefile.bak-*
+go.mod.bak*
+go.sum.bak*
+
+# Runtime data
+deploy-riscv64/volumes/
+volumes/
+*.log

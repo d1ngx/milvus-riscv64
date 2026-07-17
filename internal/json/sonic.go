@@ -1,9 +1,9 @@
 // Licensed to the LF AI & Data foundation under one
 // or more contributor license agreements. See the NOTICE file
 // distributed with this work for additional information
-// regarding copyright ownership. The ASF licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
+// regarding copyright ownership. The LF AI & Data foundation
+// licenses this file to you under the Apache License, Version 2.0
+// (the "License"); you may not use this file except in compliance
 // with the License. You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -16,29 +16,28 @@
 
 package json
 
-import (
-	gojson "encoding/json"
-
-	"github.com/bytedance/sonic"
-)
+import stdjson "encoding/json"
 
 var (
-	json = sonic.ConfigStd
-	// Marshal is exported from bytedance/sonic package.
-	Marshal = json.Marshal
-	// Unmarshal is exported from bytedance/sonic package.
-	Unmarshal = json.Unmarshal
-	// MarshalIndent is exported from bytedance/sonic package.
-	MarshalIndent = json.MarshalIndent
-	// NewDecoder is exported from bytedance/sonic package.
-	NewDecoder = json.NewDecoder
-	// NewEncoder is exported from bytedance/sonic package.
-	NewEncoder = json.NewEncoder
+	// Marshal serializes v using the Go standard JSON implementation.
+	Marshal = stdjson.Marshal
+
+	// Unmarshal deserializes data using the Go standard JSON implementation.
+	Unmarshal = stdjson.Unmarshal
+
+	// MarshalIndent serializes v with indentation.
+	MarshalIndent = stdjson.MarshalIndent
+
+	// NewDecoder returns a standard JSON stream decoder.
+	NewDecoder = stdjson.NewDecoder
+
+	// NewEncoder returns a standard JSON stream encoder.
+	NewEncoder = stdjson.NewEncoder
 )
 
 type (
-	Delim      = gojson.Delim
-	Decoder    = gojson.Decoder
-	Number     = gojson.Number
-	RawMessage = gojson.RawMessage
+	Delim      = stdjson.Delim
+	Decoder    = stdjson.Decoder
+	Number     = stdjson.Number
+	RawMessage = stdjson.RawMessage
 )

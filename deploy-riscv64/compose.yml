@@ -37,8 +37,14 @@ services:
         - health
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
 
     networks:
       - milvus
@@ -73,15 +79,89 @@ services:
       test:
         - CMD
         - curl
-        - -f
+        - -fsS
         - http://127.0.0.1:9000/minio/health/live
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 15s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
 
     networks:
       - milvus
+
+  standalone:
+    container_name: milvus-standalone
+    image: milvusdb/milvus:v2.6.20-riscv64
+    restart: unless-stopped
+
+    depends_on:
+      etcd:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+    environment:
+      TZ: Asia/Shanghai
+
+      ETCD_ENDPOINTS: etcd:2379
+
+      MINIO_ADDRESS: minio
+      MINIO_PORT: "9000"
+      MINIO_ACCESS_KEY_ID: minioadmin
+      MINIO_SECRET_ACCESS_KEY: minioadmin
+
+    command:
+      - run
+      - standalone
+
+    ports:
+      - "19530:19530"
+      - "19529:19529"
+      - "9091:9091"
+
+    volumes:
+      - ./volumes/milvus:/var/lib/milvus
+
+    shm_size: "2gb"
+
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+      core:
+        soft: -1
+        hard: -1
+
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -fsS
+        - http://127.0.0.1:9091/healthz
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+    networks:
+      - milvus
+    deploy:
+      resources:
+        limits:
+          memory: 4096M  # 等价于 -m 4g
+          cpus: '4.0'    # 等价于 --cpus=4
 
 networks:
   milvus:

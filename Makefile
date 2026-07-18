@@ -20,7 +20,14 @@ INSTALL_PATH := $(PWD)/bin
 LIBRARY_PATH := $(PWD)/lib
 PGO_PATH := $(PWD)/configs/pgo
 OS := $(shell uname -s)
+ARCH := $(shell uname -m)
 mode = Release
+
+# Apache Arrow v17 does not initialize its BMI bitmap function table on
+# riscv64 unless the portable noasm implementation is selected.
+ifeq ($(ARCH),riscv64)
+	MILVUS_GO_BUILD_TAGS := $(MILVUS_GO_BUILD_TAGS),noasm
+endif
 
 # Set disk_index default based on OS
 # macOS (Darwin) does not support aio, so disable disk_index

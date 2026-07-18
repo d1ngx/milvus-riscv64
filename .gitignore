@@ -150,11 +150,13 @@ mongocxx_install_manifest.txt
 *.bak.*
 *.bak-*
 *.before-*
+*.codex-backup-*
 Makefile.bak-*
 go.mod.bak*
 go.sum.bak*
 
 # Runtime data
+deploy-riscv64/rootfs/
 deploy-riscv64/volumes/
 volumes/
 *.log
